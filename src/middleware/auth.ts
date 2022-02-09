@@ -2,8 +2,8 @@ export function auth (req, res, next) {
   console.log(req.session);
 
   if(!req.session.user) {
-      var err = new Error('You are not authenticated!');
-      err.status = 403;
+      console.log(req.session.user);
+      let err = new Error('You are not authenticated!');
       return next(err);
   }
   else {
@@ -11,8 +11,7 @@ export function auth (req, res, next) {
       next();
     }
     else {
-      var err = new Error('You are not authenticated!');
-      err.status = 403;
+      let err = new Error('You are not authenticated!');
       return next(err);
     }
   }
