@@ -22,23 +22,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.artistsRouter = void 0;
+exports.usersRouter = void 0;
 // setting up modules
 const express_1 = __importDefault(require("express"));
 const bodyParser = __importStar(require("body-parser"));
-const clientInstance_1 = require("../models/clientInstance");
-// creating router
-exports.artistsRouter = express_1.default.Router();
-exports.artistsRouter.use(bodyParser.json());
-// setting up routes
-exports.artistsRouter.route('/')
+exports.usersRouter = express_1.default.Router();
+exports.usersRouter.use(bodyParser.json());
+exports.usersRouter.route('/')
     .get((req, res, next) => {
-    (new clientInstance_1.ClientInstance()).getData('SELECT * FROM artists')
-        .then(data => res.send(data));
+    res.send();
+})
+    .post((req, res, next) => {
+    res.send();
 });
-exports.artistsRouter.route('/:artistId')
-    .get((req, res, next) => {
-    (new clientInstance_1.ClientInstance()).getData(`SELECT * FROM artists WHERE id = ${req.params.artistId};`)
-        .then(data => res.send(data));
-});
-//# sourceMappingURL=artistsRouter.js.map
+//# sourceMappingURL=usersRouter.js.map

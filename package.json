@@ -15,6 +15,7 @@
     "@types/express-session": "^1.17.4",
     "express": "^4.17.2",
     "express-session": "^1.17.2",
+    "generic-pool": "^3.8.2",
     "ts-postgres": "^1.2.1"
   },
   "devDependencies": {
