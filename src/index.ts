@@ -1,7 +1,15 @@
 // setting up modules
+import 'reflect-metadata';
 import express from 'express';
 import * as bodyParser from 'body-parser';
 import session from 'express-session';
+import { createConnection } from 'typeorm';
+
+declare module 'express-session' {
+  interface Session {
+    user: string;
+  }
+};
 
 // importing routers
 import { artistsRouter as artists } from './routes/artistsRouter';
@@ -16,8 +24,21 @@ const app = express();
 // setting up port (app.set(name, value) assigns any name to value)
 app.set('port', process.env.PORT || 3000);
 
-// starting server
-app.listen(app.get('port'), () => console.log(`Running on http://localhost:${app.get('port')}`));
+// starting bd connection and server
+const start = async () => {
+  await createConnection({
+    type: 'postgres',
+    host: 'localhost',
+    port: 5432,
+    database: 'artists_application',
+    username: 'postgres',
+    password: 'kiopnm',
+    entities: ['./src/models/*.ts']
+  });
+  app.listen(app.get('port'), () => console.log(`Running on http://localhost:${app.get('port')}`));
+};
+
+start().catch(console.error);
 
 // returning middleware that parses json and only looks at request where Content-Type header matches the type option
 app.use(bodyParser.json());
@@ -32,9 +53,17 @@ app.use(session({
 
 // setting up routes
 app.get('/', (req, res, next) => {res.send('hi')});
-app.use(['/signin', '/signup'], users);
+app.use(users);
 
 // using app's authorization middleware
-// app.use(auth);
+app.use(auth);
+
+app.get('/logout', (req, res, next) => {
+    req.session.destroy((err) => {next(err)});
+    res.clearCookie('connect.sid');
+    res.redirect('/');
+});
 
 app.use('/artists', artists);
+
+module.exports = app;

@@ -26,13 +26,51 @@ exports.usersRouter = void 0;
 // setting up modules
 const express_1 = __importDefault(require("express"));
 const bodyParser = __importStar(require("body-parser"));
+const userController_1 = require("../controllers/userController");
 exports.usersRouter = express_1.default.Router();
 exports.usersRouter.use(bodyParser.json());
-exports.usersRouter.route('/')
+exports.usersRouter.route('/signup')
     .get((req, res, next) => {
     res.send();
 })
     .post((req, res, next) => {
+    let userController = new userController_1.UserController();
+    userController.findUser(req.body.username, req.body.password)
+        .then(user => {
+        if (!user) {
+            userController.createUser(req.body.username, req.body.password)
+                .then(user => {
+                userController.addUser(user);
+                req.session.user = 'authenticated';
+                res.redirect('/artists');
+            });
+        }
+        else {
+            let err = new Error(`User ${req.body.username} already exists!`);
+            next(err);
+        }
+        ;
+    })
+        .catch(err => next(err));
+});
+exports.usersRouter.route('/signin')
+    .get((req, res, next) => {
     res.send();
+})
+    .post((req, res, next) => {
+    let userController = new userController_1.UserController();
+    userController.findUser(req.body.username, req.body.password)
+        .then(user => {
+        if (user) {
+            req.session.user = 'authenticated';
+            res.redirect('/artists');
+        }
+        else {
+            let err = new Error(`Wrong credentials!`);
+            next(err);
+        }
+        ;
+    })
+        .catch(err => next(err));
 });
 //# sourceMappingURL=usersRouter.js.map
