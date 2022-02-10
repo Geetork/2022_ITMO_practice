@@ -15,7 +15,11 @@
     "@types/express-session": "^1.17.4",
     "express": "^4.17.2",
     "express-session": "^1.17.2",
-    "ts-postgres": "^1.2.1"
+    "generic-pool": "^3.8.2",
+    "pg": "^8.7.3",
+    "reflect-metadata": "^0.1.13",
+    "ts-postgres": "^1.2.1",
+    "typeorm": "^0.2.41"
   },
   "devDependencies": {
     "ts-node": "^10.4.0",

@@ -32,28 +32,40 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // setting up modules
+require("reflect-metadata");
 const express_1 = __importDefault(require("express"));
 const bodyParser = __importStar(require("body-parser"));
-const ts_postgres_1 = require("ts-postgres");
 const express_session_1 = __importDefault(require("express-session"));
+const typeorm_1 = require("typeorm");
+;
 // importing routers
 const artistsRouter_1 = require("./routes/artistsRouter");
+const usersRouter_1 = require("./routes/usersRouter");
 // importing app's middleware
 const auth_1 = require("./middleware/auth");
 // creating app
 const app = (0, express_1.default)();
 // setting up port (app.set(name, value) assigns any name to value)
 app.set('port', process.env.PORT || 3000);
-// connecting to bd and starting server
-(() => __awaiter(void 0, void 0, void 0, function* () {
-    yield connectPostgres();
+// starting bd connection and server
+const start = () => __awaiter(void 0, void 0, void 0, function* () {
+    yield (0, typeorm_1.createConnection)({
+        type: 'postgres',
+        host: 'localhost',
+        port: 5432,
+        database: 'artists_application',
+        username: 'postgres',
+        password: 'kiopnm',
+        entities: ['./src/models/*.ts']
+    });
     app.listen(app.get('port'), () => console.log(`Running on http://localhost:${app.get('port')}`));
-}))();
+});
+start().catch(console.error);
 // returning middleware that parses json and only looks at request where Content-Type header matches the type option
 app.use(bodyParser.json());
 // using the session middleware
 // forcing the session to be saved back to the session store, even if the sission was never midified during the request
-// fircing a session that id 'uninitialized' to be saved to the store. A session is uninitialized when it is new but not modified
+// forcing a session that id 'uninitialized' to be saved to the store. A session is uninitialized when it is new but not modified
 app.use((0, express_session_1.default)({
     secret: '12345-67890-09876-54321',
     resave: true,
@@ -61,27 +73,14 @@ app.use((0, express_session_1.default)({
 }));
 // setting up routes
 app.get('/', (req, res, next) => { res.send('hi'); });
+app.use(usersRouter_1.usersRouter);
 // using app's authorization middleware
 app.use(auth_1.auth);
+app.get('/logout', (req, res, next) => {
+    req.session.destroy((err) => { next(err); });
+    res.clearCookie('connect.sid');
+    res.redirect('/');
+});
 app.use('/artists', artistsRouter_1.artistsRouter);
-// setting up Postgres Client
-function connectPostgres() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const client = new ts_postgres_1.Client({
-            host: 'localhost',
-            port: 5432,
-            database: 'artists_application',
-            user: 'postgres',
-            password: 'kiopnm'
-        });
-        try {
-            yield client.connect();
-            console.log('Connected to artists_application BD on port 5432!');
-        }
-        catch (error) {
-            console.log('Couldn\'t connect to artists_application database!');
-        }
-    });
-}
-;
+module.exports = app;
 //# sourceMappingURL=index.js.map

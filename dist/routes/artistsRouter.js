@@ -26,16 +26,20 @@ exports.artistsRouter = void 0;
 // setting up modules
 const express_1 = __importDefault(require("express"));
 const bodyParser = __importStar(require("body-parser"));
+const artistController_1 = require("../controllers/artistController");
 // creating router
 exports.artistsRouter = express_1.default.Router();
 exports.artistsRouter.use(bodyParser.json());
 // setting up routes
 exports.artistsRouter.route('/')
     .get((req, res, next) => {
-    return res.send('okey');
+    (new artistController_1.ArtistController()).getAll()
+        .then(data => res.send(data));
 });
 exports.artistsRouter.route('/:artistId')
     .get((req, res, next) => {
-    return res.send(req.params.artistId);
+    const id = parseInt(req.params.artistId);
+    (new artistController_1.ArtistController()).getById(id)
+        .then(data => res.send(data));
 });
 //# sourceMappingURL=artistsRouter.js.map

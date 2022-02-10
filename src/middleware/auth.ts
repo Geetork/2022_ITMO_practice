@@ -1,6 +1,4 @@
 export function auth (req, res, next) {
-  console.log(req.session);
-
   if(!req.session.user) {
       console.log(req.session.user);
       let err = new Error('You are not authenticated!');
