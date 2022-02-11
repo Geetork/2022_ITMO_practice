@@ -37,6 +37,7 @@ const express_1 = __importDefault(require("express"));
 const bodyParser = __importStar(require("body-parser"));
 const express_session_1 = __importDefault(require("express-session"));
 const typeorm_1 = require("typeorm");
+const config_1 = __importDefault(require("./config"));
 ;
 // importing routers
 const artistsRouter_1 = require("./routes/artistsRouter");
@@ -46,16 +47,16 @@ const auth_1 = require("./middleware/auth");
 // creating app
 const app = (0, express_1.default)();
 // setting up port (app.set(name, value) assigns any name to value)
-app.set('port', process.env.PORT || 3000);
+app.set('port', parseInt(config_1.default.PORT) || 3000);
 // starting bd connection and server
 const start = () => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, typeorm_1.createConnection)({
         type: 'postgres',
-        host: 'localhost',
-        port: 5432,
-        database: 'artists_application',
-        username: 'postgres',
-        password: 'kiopnm',
+        host: config_1.default.DB_HOST,
+        port: parseInt(config_1.default.DB_PORT),
+        database: config_1.default.DATABASE,
+        username: config_1.default.DB_USER,
+        password: config_1.default.DB_PASSWORD,
         entities: ['./src/models/*.ts']
     });
     app.listen(app.get('port'), () => console.log(`Running on http://localhost:${app.get('port')}`));
@@ -67,7 +68,7 @@ app.use(bodyParser.json());
 // forcing the session to be saved back to the session store, even if the sission was never midified during the request
 // forcing a session that id 'uninitialized' to be saved to the store. A session is uninitialized when it is new but not modified
 app.use((0, express_session_1.default)({
-    secret: '12345-67890-09876-54321',
+    secret: config_1.default.SECRET,
     resave: true,
     saveUninitialized: true
 }));
